@@ -5,29 +5,45 @@ const app = express();
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Bem vindo ao meu servidor Express! - tsc-watca");
+  res.send("Bem vindo ao meu servidor Express!");
 });
 
-let usuarios = [
-  {
-    nome: "Giovanni Finetto",
-    idade: 21,
-  },
-  {
-    nome: "Erika Buonopane",
-    idade: 37,
-  },
-];
+type User = {
+  id: number;
+  nome: string;
+  email: string;
+};
+
+let id = 1;
+let usuarios: User[] = [];
 
 app.get("/users", (req: Request, res: Response) => {
   res.send(usuarios);
 });
 
+app.get("/users/:id", (req: Request, res: Response) => {
+  let userId = Number(req.params.id);
+  let user = usuarios.find((user) => user.id === userId);
+  res.send(user);
+});
+
 app.post("/users", (req: Request, res: Response) => {
   let user = req.body;
+  user.id = id++;
   usuarios.push(user);
   res.send({
     message: "Usuário criado com sucesso!",
+  });
+});
+
+app.put("/users/:id", (req: Request, res: Response) => {
+  let userId = Number(req.params.id);
+  let user = req.body;
+  let indexOf = usuarios.findIndex((_user: User) => _user.id === userId);
+  usuarios[indexOf].nome = user.nome;
+  usuarios[indexOf].email = user.email;
+  res.send({
+    message: "Usuário alterado com sucesso!",
   });
 });
 
